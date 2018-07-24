@@ -1,1 +1,239 @@
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>Documentazione</title>
+        <link href="css/style.css" rel="stylesheet">
+        <script src="js/jquery.min.js"></script>
+    </head>
+    <body>
+        <div class="text-center w-100">
+            <h1>Documentazione libreria BACnet4J</h1>
+        </div>
+        <div class="w-100">
+            <div class="w-75 m-lr-a">
+                <p class="u p-tb-5 text-center">
+                    Questa documentazione non è ufficiale, per maggiori info visita <a href="https://github.com/infiniteautomation/BACnet4J" style="font-size: 1.25em;">BACnet4J</a>
+                </p>
+                <div class="main-border p-lrb-20">
+                    <h3>
+                        Introduzione
+                    </h3>
+                    <p class="m-lr-15">
+                        In una rete BACnet ogni device ha un ID unico, l'invio e la ricezione di pacchetti tra i device avviene tramite il protocollo UDP/IP sulla porta 0xBAC0 cioè 47808. I device sulla rete BACnet non sono gli unici ad avere un ID, infatti, possono essere presenti degli "oggetti".<br>
+Un oggetto, secondo lo standard BACnet, deve essere di un certo tipo:
+                    </p>
+                    <div class="box">
+                        <ul class="d-ib">
+                            <li>Access Door</li>
+                            <li>Accumulator</li>
+                            <li>Analog Input</li>
+                            <li>Analog Output</li>
+                            <li>Analog Value</li>
+                            <li>Averaging</li>
+                            <li>Binary Input</li>
+                            <li>Binary Output</li>
+                            <li>Binary Value</li>
+                        </ul>
+                        <ul class="d-ib">
+                            <li>Calendar</li>
+                            <li>Command</li>
+                            <li>Device</li>
+                            <li>Event Enrollment</li>
+                            <li>Event Log</li>
+                            <li>File</li>
+                            <li>Group</li>
+                            <li>Life safety Point</li>
+                            <li>Life Safety Zone</li>
+                        </ul>
+                        <ul class="d-ib">                            
+                            <li>Load Control</li>
+                            <li>Loop</li>
+                            <li>Mulit-state Input</li>
+                            <li>Multi-state Output</li>
+                            <li>Multi-state Value</li>
+                            <li>Notification Class</li>
+                            <li>Program</li>
+                            <li>Pulse Converter</li>
+                            <li>Schedule</li>
+                        </ul>                        
+                    </box>
+                </div>
+                <p class="m-lr-15">
+                    Ogni tipo di oggetto a sua volta ha delle properietà, necessarie e non, che dipendono dalla sua tipologia. 
+                </p>
+                <hr>
+                <h3>
+                    Preparazione ambiente di sviluppo
+                </h3>
+                <ul>
+                    <li class="m-lr-15">
+                        Creare un progetto nel proprio IDE Java.<br>
+                    </li>                        
+                    <li class="m-lr-15">
+                        Scaricare <a href="https://github.com/infiniteautomation/BACnet4J">BACnet4J</a> e scegliere una delle varie versioni presenti nella cartella "release", fatto ciò, importare il file "bacnet4j-x.x.x.jar" come libreria nel progetto appena creato.
+                    </li>
+                </ul>
+                <hr>
+                <h3>
+                    "Creazione" pila UDP tramite BACnet4J
+                </h3>
+                <ul>
+                    <li class="m-lr-15">
+                        Creazione del layer "Network"
+                    </li>
+                    <div class="box_code">
+                        IpNetworkBuilder networkBuilder = new IpNetworkBuilder();<br>
+		                networkBuilder.broadcastIp(IpNetwork.DEFAULT_BROADCAST_IP);<br>
+		                networkBuilder.port(IpNetwork.DEFAULT_PORT);<br>
+		                IpNetwork network = networkBuilder.build();
+                    <div>
+                </ul>
+                <ul>
+                    <li class="m-lr-15">
+                        Creazione del layer "Transport"
+                    </li>
+                    <p>Il layer Transport necessita come parametro il layer Network precedentemente inizializzato</p>
+                    <div class="box_code">
+                    	Transport transport = new DefaultTransport(network);<br>
+                    <div>
+                </ul>
+                <hr>
+                <h3>
+                    Connessione tra device BACnet sulla stessa rete
+                </h3>
+               	<ul>
+               		<li class="m-lr-15">
+               			Instanziare device locale
+               		</li>
+               		<div class="box_code">
+	             		int myDeviceId = 16;<br>
+			            LocalDevice localDevice = new LocalDevice(myDeviceId, transport);<br>
+			            localDevice.initialize();
+			        </div>
+			        <p class="m-lr-15 i">In questo esempio, assegno al device locale l'id 16 e al device remoto l'id 2.</p>
+			        <li class="m-lr-15">
+               			Creare una connessione con un altro device BACnet
+               		</li>
+               		<div class="box_code">
+						String remoteDeviceIpAddress = "x.x.x.x";<br>
+						int port = IpNetwork.DEFAULT_PORT;<br>
+						int remoteDeviceIdentifier = 2;<br>
+						RemoteDevice remoteDevice = localDevice.findRemoteDevice(IpNetworkUtils.toAddress(remoteDeviceIpAddress, port), remoteDeviceIdentifier);
+               		</div>
+			   	</ul>
+			   	<hr class="normal-hr">
+			   	<span id="addObjectToLocal" class="link">Aggiungere un oggetto e renderlo visibile agli altri device sulla rete 🡣</span>
+			   	<div id="addObjectToLocalInfo" class="nv">
+			   		<ul>
+				   		<li class="m-lr-15">
+				   			Creazione di un oggetto BACnet
+				   		</li>
+				   		<div class="box_code">
+				   			ObjectIdentifier objectId = new ObjectIdentifier(ObjectType.analogValue, 55);<br>
+							BACnetObject object = new BACnetObject(objectId);
+				  		</div>
+				  		<p class="m-lr-15">
+				  			In questo esempio viene creato un oggetto BACnet di tipo "analogValue" e gli viene assegnato l'ID 55.<br>
+				  			N.B. Ogni device e oggetto su una rete BACnet ha un ID unico che lo contraddistingue.
+				  		</p>
+				  		<li class="m-lr-15">
+				  			Assegnazione del localDevice all'oggetto BACnet
+				  		</li>
+				  		<div class="box_code">
+				  			object.setLocalDevice(localDevice);
+				  		</div>
+				  		<li class="m-lr-15">
+				  			Scrittura delle proprietà dell'oggetto
+				  		</li>
+				  		<p class="m-lr-15">
+				  			Ogni oggetto BACnet ha delle proprietà obbligatorie e non, per la lista completa delle proprietà di ogni tipo di oggetto visitare <a href="#">questo link</a>.<br>
+				  		</p>
+				  		<div class="box_code">
+				  			object.writeProperty(new PropertyValue(PropertyIdentifier.presentValue, new Real(12.3f)));<br>
+							object.writeProperty(new PropertyValue(PropertyIdentifier.statusFlags, new StatusFlags(false, false, false, false)));<br>
+							object.writeProperty(new PropertyValue(PropertyIdentifier.eventState, new EventState(1)));<br>
+							object.writeProperty(new PropertyValue(PropertyIdentifier.outOfService, new Boolean(false)));<br>
+							object.writeProperty(new PropertyValue(PropertyIdentifier.units, new EngineeringUnits(1)));
+				  		</div>
+				  		<p class="m-lr-15 i">
+				  			In questo esempio sono state inserite solo le proprietà obbligatorie per l'oggetto analogValue. 
+				  		</p>
+				  		<li class="m-lr-15">
+				  			Aggiunta dell'oggetto BACnet al localDevice
+				  		</li>
+				  		<span class="m-lr-15 i u">
+				  			L'oggetto deve essere assegnato al localDevice così che un possibile device remoto non debba conoscere l'ID di ogni oggetto creato ma possa semplicemente connettersi al mio localDevice e avere una lista di ogni oggetto ad esso assegnato.
+				  		</span>
+				  		<div class="box_code">
+				  			localDevice.addObject(object);
+				  		</div>
+				  		<li class="m-lr-15">
+				  			Inizializzazione localDevice
+				  		</li>
+				  		<div class="box_code">
+				  			localDevice.initialize();
+				  		</div>
+			  		</ul>
+			  	</div>
+			  	<hr>
+			  	<span id="getRemoteObjects" class="link">Visualizzare gli oggetti di un altro device sulla stessa rete BACnet 🡣</span>
+			  	<div id="getRemoteObjectsInfo" class="nv p-a-10">
+			   		<div class="box_code">
+			   			List&ltObjectIdentifier&gt oids = ((SequenceOf&ltObjectIdentifier&gt) RequestUtils.sendReadPropertyAllowNull(
+                localDevice, remoteDevice, remoteDevice.getObjectIdentifier(), PropertyIdentifier.objectList)).getValues();<br>
+						System.out.println(oids);
+			   		</div>
+			   		<p class="m-lr-15">
+			   			Questo esempio scriverà su console qualcosa di simile a questo :
+			   			<div class="box_code">
+			   				[Device 2, AnalogValue 55]
+			   			</div>
+			   			<p class="m-lr-15">Per avere uno dei due risultati basterà scrivere :</p>
+			   			<div class="box_code">
+			   				oids.get(x);
+			   			</div>
+			   			<span class="i m-lr-15"> dove "x" corrisponde a alla index dell'elemento voluto.</span>
+			   		</p>
+			  	</div>
+			  	<hr>
+			  	<span id="getRemoteProperty" class="link">Visualizzare le proprietà di un oggetto remoto 🡣</span>
+			  	<div id="getRemotePropertyInfo" class="nv p-a-10">
+			  		<div class="box_code">
+			  			RequestUtils.getProperty(localDevice, remoteDevice, oids.get(1), PropertyIdentifier.presentValue);
+			  		</div>
+			  		<p class="m-lr-15">
+			  			Questo codice restituisce la proprietà "presentValue" dell'oggetto avuto nel precedente articolo "Visualizzare gli oggetti di un altro device sulla stessa rete BACnet". L'oggetto BACnet che utilizziamo come parametro è "AnalogValue 55".<br>
+			  			La proprietà present value contiene un valore "Real" e , attenendoci al precedente articolo, in questo caso varrà 12.3 .
+			  		</p>
+			  	</div>
+			  	<hr>
+			  	<span id="writeRemoteProperty" class="link">Modificare le proprietà di un oggetto remoto 🡣</span>
+			  	<div id="writeRemotePropertyInfo" class="nv p-a-10">
+			  		<div class="box_code">
+			  			WritePropertyRequest request = new WritePropertyRequest(oids.get(1), PropertyIdentifier.presentValue, null, new Real(100), null);<br>
+						localDevice.send(remoteDevice, request);
+			  		</div>
+			  		<p class="m-lr-15">
+			  			La richiesta  di modifica del valore viene "assemblata" e infine inviate.
+			  		</p>
+			  	</div>
+            </div>
+        </div>
+        <footer></footer>
+    </body>
+    <script>
+    	$("#addObjectToLocal").click(function (){
+    		$("#addObjectToLocalInfo").toggle("fast");
+    	});
+    	$("#getRemoteObjects").click(function (){
+    		$("#getRemoteObjectsInfo").toggle("fast");
+    	});
+    	$("#getRemoteProperty").click(function (){
+    		$("#getRemotePropertyInfo").toggle("fast");
+    	})
+    	$("#writeRemoteProperty").click(function (){
+    		$("#writeRemotePropertyInfo").toggle("fast");
+    	})
+    </script>
+</html>
 
