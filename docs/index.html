@@ -56,7 +56,7 @@ Un oggetto, secondo lo standard BACnet, deve essere di un certo tipo:
                             <li>Pulse Converter</li>
                             <li>Schedule</li>
                         </ul>                        
-                    </box>
+                    </div>
                 </div>
                 <p class="m-lr-15">
                     Ogni tipo di oggetto a sua volta ha delle properietà, necessarie e non, che dipendono dalla sua tipologia. 
@@ -122,7 +122,7 @@ Un oggetto, secondo lo standard BACnet, deve essere di un certo tipo:
                		</div>
 			   	</ul>
 			   	<hr class="normal-hr">
-			   	<span id="addObjectToLocal" class="link">Aggiungere un oggetto e renderlo visibile agli altri device sulla rete 🡣</span>
+			   	<p id="addObjectToLocal" class="link">Aggiungere un oggetto e renderlo visibile agli altri device sulla rete 🡣</p>
 			   	<div id="addObjectToLocalInfo" class="nv">
 			   		<ul>
 				   		<li class="m-lr-15">
@@ -153,17 +153,20 @@ Un oggetto, secondo lo standard BACnet, deve essere di un certo tipo:
 							object.writeProperty(new PropertyValue(PropertyIdentifier.statusFlags, new StatusFlags(false, false, false, false)));<br>
 							object.writeProperty(new PropertyValue(PropertyIdentifier.eventState, new EventState(1)));<br>
 							object.writeProperty(new PropertyValue(PropertyIdentifier.outOfService, new Boolean(false)));<br>
-							object.writeProperty(new PropertyValue(PropertyIdentifier.units, new EngineeringUnits(1)));
+							object.writeProperty(new PropertyValue(PropertyIdentifier.units, EngineeringUnits.degreesKelvin));
 				  		</div>
 				  		<p class="m-lr-15 i">
 				  			In questo esempio sono state inserite solo le proprietà obbligatorie per l'oggetto analogValue. 
 				  		</p>
+						<p class="m-lr-15">
+							<u>La proprietà <i>units</i> specifica l'unità di misura ed è una proprietà obbligatoria per ogni oggetto BACnet</u>, per questa proprietà viene utilizzata la classe <i>EngineeringUnits</i> che possiede delle unità di misura come costanti.
+						</p>
 				  		<li class="m-lr-15">
 				  			Aggiunta dell'oggetto BACnet al localDevice
 				  		</li>
-				  		<span class="m-lr-15 i u">
-				  			L'oggetto deve essere assegnato al localDevice così che un possibile device remoto non debba conoscere l'ID di ogni oggetto creato ma possa semplicemente connettersi al mio localDevice e avere una lista di ogni oggetto ad esso assegnato.
-				  		</span>
+				  		<p class="m-lr-15">
+				  			<u>L'oggetto deve essere assegnato al localDevice</u> così che un possibile device remoto non debba conoscere l'ID di ogni oggetto creato ma possa semplicemente connettersi al mio localDevice e avere una lista di ogni oggetto ad esso assegnato.
+				  		</p>
 				  		<div class="box_code">
 				  			localDevice.addObject(object);
 				  		</div>
@@ -176,7 +179,7 @@ Un oggetto, secondo lo standard BACnet, deve essere di un certo tipo:
 			  		</ul>
 			  	</div>
 			  	<hr>
-			  	<span id="getRemoteObjects" class="link">Visualizzare gli oggetti di un altro device sulla stessa rete BACnet 🡣</span>
+			  	<p id="getRemoteObjects" class="link">Visualizzare gli oggetti di un altro device sulla stessa rete BACnet 🡣</p>
 			  	<div id="getRemoteObjectsInfo" class="nv p-a-10">
 			   		<div class="box_code">
 			   			List&ltObjectIdentifier&gt oids = ((SequenceOf&ltObjectIdentifier&gt) RequestUtils.sendReadPropertyAllowNull(
@@ -192,29 +195,29 @@ Un oggetto, secondo lo standard BACnet, deve essere di un certo tipo:
 			   			<div class="box_code">
 			   				oids.get(x);
 			   			</div>
-			   			<span class="i m-lr-15"> dove "x" corrisponde a alla index dell'elemento voluto.</span>
+			   			<p class="i m-lr-15"> dove "x" corrisponde alla index dell'elemento voluto.</p>
 			   		</p>
 			  	</div>
 			  	<hr>
-			  	<span id="getRemoteProperty" class="link">Visualizzare le proprietà di un oggetto remoto 🡣</span>
+			  	<p id="getRemoteProperty" class="link">Visualizzare le proprietà di un oggetto remoto 🡣</p>
 			  	<div id="getRemotePropertyInfo" class="nv p-a-10">
 			  		<div class="box_code">
 			  			RequestUtils.getProperty(localDevice, remoteDevice, oids.get(1), PropertyIdentifier.presentValue);
 			  		</div>
 			  		<p class="m-lr-15">
-			  			Questo codice restituisce la proprietà "presentValue" dell'oggetto avuto nel precedente articolo "Visualizzare gli oggetti di un altro device sulla stessa rete BACnet". L'oggetto BACnet che utilizziamo come parametro è "AnalogValue 55".<br>
-			  			La proprietà present value contiene un valore "Real" e , attenendoci al precedente articolo, in questo caso varrà 12.3 .
+			  			Questo codice restituisce la proprietà "presentValue" dell'oggetto avuto nel precedente articolo <a id="vis_id" href="#getRemoteObjects">Visualizzare gli oggetti di un altro device sulla stessa rete BACnet</a>. L'oggetto BACnet che utilizziamo come parametro è "AnalogValue 55".<br>
+			  			La proprietà Present Value contiene un valore <i>Real</i> e , attenendoci al precedente articolo, in questo caso varrà 12.3 .
 			  		</p>
 			  	</div>
 			  	<hr>
-			  	<span id="writeRemoteProperty" class="link">Modificare le proprietà di un oggetto remoto 🡣</span>
+			  	<p id="writeRemoteProperty" class="link">Modificare le proprietà di un oggetto remoto 🡣</p>
 			  	<div id="writeRemotePropertyInfo" class="nv p-a-10">
 			  		<div class="box_code">
 			  			WritePropertyRequest request = new WritePropertyRequest(oids.get(1), PropertyIdentifier.presentValue, null, new Real(100), null);<br>
 						localDevice.send(remoteDevice, request);
 			  		</div>
 			  		<p class="m-lr-15">
-			  			La richiesta  di modifica del valore viene "assemblata" e infine inviate.
+			  			La richiesta  di modifica del valore viene "assemblata" e infine inviata.
 			  		</p>
 			  	</div>
             </div>
@@ -230,10 +233,14 @@ Un oggetto, secondo lo standard BACnet, deve essere di un certo tipo:
     	});
     	$("#getRemoteProperty").click(function (){
     		$("#getRemotePropertyInfo").toggle("fast");
-    	})
+    	});
     	$("#writeRemoteProperty").click(function (){
     		$("#writeRemotePropertyInfo").toggle("fast");
-    	})
+    	});
+		$("a#vis_id").click(function(e){
+			e.preventDefault();
+			$("#getRemoteObjectsInfo").show("fast");
+		});
     </script>
 </html>
 
